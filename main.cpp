@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -6,8 +7,10 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 void processInput(GLFWwindow *window);
 
+float *generateVertices();
+
 const unsigned int WIDTH = 800;
-const unsigned int HEIGHT = 600;
+const unsigned int HEIGHT = 800;
 
 const char *vertexShaderSource = "#version 460 core\n"
         "layout (location = 0) in vec3 aPos;\n"
@@ -19,7 +22,7 @@ const char *fragmentShaderSource = "#version 460 core\n"
         "out vec4 FragColor;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = vec4(1.0f, 1f, 0.0f, 1.0f);\n"
+        "   FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
         "}\n\0";
 
 int main() {
@@ -82,20 +85,7 @@ int main() {
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    float vertices[] = {
-        // first triangle
-        -0.9f, -1.0f, 0.0f, // left
-        -0.0f, -1.0f, 0.0f, // right
-        -0.45f, 0.0f, 0.0f, // top
-        // second triangle
-        0.0f, -1.0f, 0.0f, // left
-        0.9f, -1.0f, 0.0f, // right
-        0.45f, 0.0f, 0.0f, // top
-        // third triangle
-        -0.45f, 0.0f, 0.0f, // left
-        0.45f, 0.0f, 0.0f, // right
-        0.0f, 1.0f, 0.0f // top
-    };
+    float *vertices = generateVertices();
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -104,7 +94,7 @@ int main() {
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 3000 * sizeof(float), vertices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
@@ -128,7 +118,7 @@ int main() {
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 9);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 1000);
 
 
         //check and call events and swap the buffers
@@ -149,4 +139,18 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
+float *generateVertices() {
+    float *vertices = new float[3000];
+    vertices[0] = 0.0f;
+    vertices[1] = 0.0f;
+    vertices[2] = 0.0f;
+    for (int i = 0; i < 999; i++) {
+        float theta = 2.0f * 3.14159f * (i / 999.0f);
+        vertices[i * 3] = std::cos(theta);
+        vertices[i * 3 + 1] = std::sin(theta);
+        vertices[i * 3 + 2] = 0.0f;
+    }
+    return vertices;
 }
