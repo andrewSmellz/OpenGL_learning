@@ -11,7 +11,10 @@ link_directories(${MSYS2_PATH}/lib)
 
 find_package(OpenGL REQUIRED)
 
-add_executable(OpenGL_learning main.cpp glad.c)
+add_executable(OpenGL_learning main.cpp glad.c
+        shader.cpp
+        shader.h
+)
 
 target_link_libraries(OpenGL_learning
         OpenGL::GL
